@@ -5,7 +5,6 @@ from core.services import StatsAnalyzer
 
 
 class TestGameRecordValidation(unittest.TestCase):
-    """Тесты валидации модели GameRecord"""
 
     def test_valid_record(self):
         record = GameRecord(player="Alice", score=100, date="2024-01-15")
@@ -30,7 +29,6 @@ class TestGameRecordValidation(unittest.TestCase):
             GameRecord(player="Alice", score=-1, date="2024-01-15")
 
     def test_boolean_score_rejected(self):
-        # bool является подклассом int в Python, должен отклоняться
         with self.assertRaises(ValueError):
             GameRecord(player="Alice", score=True, date="2024-01-15")
 
@@ -48,7 +46,6 @@ class TestGameRecordValidation(unittest.TestCase):
 
 
 class TestStatsAnalyzerEmpty(unittest.TestCase):
-    """Тесты граничного условия — пустые данные"""
 
     def setUp(self):
         self.analyzer = StatsAnalyzer(iter([]))
@@ -63,12 +60,11 @@ class TestStatsAnalyzerEmpty(unittest.TestCase):
 
     def test_records_empty(self):
         result = self.analyzer.get_records()
-        self.assertIsNone(result["all_time_best"])
+        self.assertIsNone(result["absolute_record"])
         self.assertEqual(result["daily_best"], {})
 
 
 class TestStatsAnalyzerLogic(unittest.TestCase):
-    """Тесты корректности алгоритмов аналитики"""
 
     def setUp(self):
         records = [
@@ -83,7 +79,6 @@ class TestStatsAnalyzerLogic(unittest.TestCase):
     def test_leaderboard_order(self):
         leaderboard = self.analyzer.get_leaderboard()
         players = [p for p, _ in leaderboard]
-        # Bob имеет макс. счёт 400, Alice — 300, Carol — 150
         self.assertEqual(players, ["Bob", "Alice", "Carol"])
 
     def test_leaderboard_max_score(self):
@@ -93,32 +88,24 @@ class TestStatsAnalyzerLogic(unittest.TestCase):
 
     def test_average_scores(self):
         averages = dict(self.analyzer.get_average_scores())
-        # Alice: (300 + 100) / 2 = 200.0
         self.assertAlmostEqual(averages["Alice"], 200.0)
-        # Bob: (200 + 400) / 2 = 300.0
         self.assertAlmostEqual(averages["Bob"], 300.0)
-        # Carol: 150 / 1 = 150.0
         self.assertAlmostEqual(averages["Carol"], 150.0)
 
     def test_all_time_best(self):
         records = self.analyzer.get_records()
-        best = records["all_time_best"]
-        self.assertEqual(best.player, "Bob")
-        self.assertEqual(best.score, 400)
+        best = records["absolute_record"]
+        self.assertEqual(best["player"], "Bob")
+        self.assertEqual(best["score"], 400)
 
     def test_daily_best(self):
         records = self.analyzer.get_records()
         daily = records["daily_best"]
-        # 2024-01-01: Alice=300, Bob=200, Carol=150 -> Alice
-        self.assertEqual(daily["2024-01-01"].player, "Alice")
-        self.assertEqual(daily["2024-01-01"].score, 300)
-        # 2024-01-02: Alice=100, Bob=400 -> Bob
-        self.assertEqual(daily["2024-01-02"].player, "Bob")
-        self.assertEqual(daily["2024-01-02"].score, 400)
+        self.assertEqual(daily["2024-01-01"], 300)
+        self.assertEqual(daily["2024-01-02"], 400)
 
 
 class TestStatsAnalyzerSingleRecord(unittest.TestCase):
-    """Тесты граничного условия — одна запись"""
 
     def setUp(self):
         records = [GameRecord(player="Solo", score=999, date="2024-06-01")]
@@ -135,11 +122,10 @@ class TestStatsAnalyzerSingleRecord(unittest.TestCase):
 
     def test_all_time_best_single(self):
         records = self.analyzer.get_records()
-        self.assertEqual(records["all_time_best"].player, "Solo")
+        self.assertEqual(records["absolute_record"]["player"], "Solo")
 
 
 class TestStatsAnalyzerDuplicates(unittest.TestCase):
-    """Тесты на корректную обработку дублирующихся игроков"""
 
     def setUp(self):
         records = [
@@ -158,5 +144,5 @@ class TestStatsAnalyzerDuplicates(unittest.TestCase):
         self.assertAlmostEqual(averages["Alice"], 50.0)
 
 
-if name == "main":
+if __name__ == "__main__":
     unittest.main()

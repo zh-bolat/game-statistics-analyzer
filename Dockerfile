@@ -7,12 +7,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Автоматический прогон тестов при сборке образа
-# Если тесты упадут — образ не соберётся
 RUN python -m unittest discover -s tests -v
 
 ENV RUN_MODE=web
 ENV DATA_FILE=data/stats.json
+# Добавляем корень проекта в пути поиска модулей Python
+ENV PYTHONPATH=/app
 
 EXPOSE 8501
 
