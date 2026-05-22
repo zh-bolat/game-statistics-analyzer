@@ -1,0 +1,14 @@
+[
+  {"player": "Alice",   "score": 350, "date": "2024-01-01"},
+  {"player": "Bob",     "score": 210, "date": "2024-01-01"},
+  {"player": "Carol",   "score": 480, "date": "2024-01-01"},
+  {"player": "Alice",   "score": 120, "date": "2024-01-02"},
+  {"player": "Bob",     "score": 530, "date": "2024-01-02"},
+  {"player": "Carol",   "score": 310, "date": "2024-01-02"},
+  {"player": "Alice",   "score": 670, "date": "2024-01-03"},
+  {"player": "Bob",     "score": 290, "date": "2024-01-03"},
+  {"player": "Dave",    "score": 410, "date": "2024-01-03"},
+  {"player": "Dave",    "score": 180, "date": "2024-01-04"},
+  {"player": "Carol",   "score": 550, "date": "2024-01-04"},
+  {"player": "Alice",   "score": 430, "date": "2024-01-04"}
+]
