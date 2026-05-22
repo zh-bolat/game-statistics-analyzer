@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  game-analyzer:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - RUN_MODE=web
+      - DATA_FILE=data/stats.json
+    volumes:
+      - ./data:/app/data
