@@ -11,11 +11,13 @@ def _parse_uploaded_file(uploaded_file) -> list[GameRecord]:
 
     for entry in raw_data:
         try:
-            records.append(GameRecord(
-                player=entry["player"],
-                score=entry["score"],
-                date=entry["date"]
-            ))
+            records.append(
+                GameRecord(
+                    player=entry["player"],
+                    score=entry["score"],
+                    date=entry["date"],
+                )
+            )
         except (KeyError, ValueError, TypeError) as e:
             st.warning(f"Запись пропущена: {entry} — Причина: {e}")
 
@@ -24,17 +26,16 @@ def _parse_uploaded_file(uploaded_file) -> list[GameRecord]:
 
 def run():
     st.set_page_config(
-        page_title="Анализатор игровой статистики",
-        page_icon="🎮",
-        layout="wide"
+        page_title="Анализатор игровой статистики", page_icon="🎮", layout="wide"
     )
 
     st.title("🎮 Анализатор игровой статистики")
-    st.markdown("Загрузите JSON-файл с игровыми сессиями для получения аналитики.")
+    st.markdown(
+        "Загрузите JSON-файл с игровыми сессиями для получения аналитики."
+    )
 
     uploaded_file = st.file_uploader(
-        label="Перетащите или выберите файл",
-        type=["json"]
+        label="Перетащите или выберите файл", type=["json"]
     )
 
     if uploaded_file is None:
@@ -55,12 +56,12 @@ def run():
     st.subheader("📌 Ключевые показатели")
 
     records_data = analyzer.get_records()
-    all_time = records_data["all_time_best"]
+    all_time = records_data["absolute_record"]
 
     col1, col2, col3 = st.columns(3)
     col1.metric("Всего записей", len(records))
-    col2.metric("Абсолютный рекорд", all_time.score if all_time else "—")
-    col3.metric("Лучший игрок", all_time.player if all_time else "—")
+    col2.metric("Абсолютный рекорд", all_time["score"] if all_time else "—")
+    col3.metric("Лучший игрок", all_time["player"] if all_time else "—")
 
     st.markdown("---")
     st.subheader("📊 Глобальный лидерборд")
@@ -68,7 +69,7 @@ def run():
     leaderboard = analyzer.get_leaderboard()
     leaderboard_data = {
         "Игрок": [p for p, _ in leaderboard],
-        "Макс. счёт": [s for _, s in leaderboard]
+        "Макс. счёт": [s for _, s in leaderboard],
     }
     st.dataframe(leaderboard_data, use_container_width=True)
 
@@ -78,7 +79,7 @@ def run():
     averages = analyzer.get_average_scores()
     averages_data = {
         "Игрок": [p for p, _ in averages],
-        "Средний счёт": [round(a, 2) for _, a in averages]
+        "Средний счёт": [round(a, 2) for _, a in averages],
     }
     st.dataframe(averages_data, use_container_width=True)
 
@@ -87,10 +88,10 @@ def run():
 
     daily_best = records_data["daily_best"]
     if daily_best:
-        chart_data = {
-            date: record.score
-            for date, record in daily_best.items()
-        }
-        st.line_chart(chart_data)
+        st.line_chart(daily_best)
     else:
         st.info("Нет данных для графика.")
+
+
+if __name__ == "__main__":
+    run()
