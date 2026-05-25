@@ -1,3 +1,3 @@
 from ports.data_repository import GameDataPort
 
-all = ["GameDataPort"]
+__all__ = ["GameDataPort"]

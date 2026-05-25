@@ -1,3 +1,3 @@
 from core.models import GameRecord
 
-all = ["GameRecord"]
+__all__ = ["GameRecord"]
