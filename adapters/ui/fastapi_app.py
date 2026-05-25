@@ -1,12 +1,12 @@
-
 import os
 
 from fastapi import FastAPI
+from fastapi import HTTPException
 from pydantic import BaseModel, field_validator
-from core.models import DATE_PATTERN
 
 
 from adapters.storage.json_storage import JSONFileAdapter
+from core.models import DATE_PATTERN
 from core.models import GameRecord
 from core.services import StatsAnalyzer
 
@@ -107,3 +107,22 @@ def records():
         absolute_record=absolute,
         daily_best=data["daily_best"],
     )
+
+@app.post("/records", response_model=GameRecordInput, status_code=201, tags=["data"])
+def add_record(record: GameRecordInput):
+    try:
+        game_record = GameRecord(
+            player=record.player,
+            score=record.score,
+            date=record.date,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+    _extra_records.append(game_record)
+    return record
+
+
+@app.get("/health", tags=["system"])
+def health():
+    return {"status": "ok"}
