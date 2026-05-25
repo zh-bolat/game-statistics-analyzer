@@ -60,3 +60,20 @@ class SQLiteAdapter(GameDataPort):
                      date_to: str | None = None,
                      ) -> Generator[GameRecord, None, None]:
         query = "SELECT player, score, date FROM game_records WHERE TRUE"
+
+        params = []
+        if player:
+            query +=" AND player = ?"
+            params.append(player)
+        if date_from:
+            query +=" AND date >= ?"
+            params.append(date_from)
+        if date_to:
+            query +=" AND date <= ?"
+            params.append(date_to)
+        query +=" ORDER BY date, player"
+
+        with self._connect() as conn:
+            rows = conn.execute(query,params).fetchall()
+        for row in rows:
+            yield GameRecord(player = row["player"], score = row["score"], date = row["date"])
