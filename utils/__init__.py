@@ -1,3 +1,3 @@
 from utils.decorators import time_it
 
-all = ["time_it"]
+__all__ = ["time_it"]
