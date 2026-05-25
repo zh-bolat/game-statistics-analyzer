@@ -1,5 +1,8 @@
 import sqlite3
+import json
+from datetime import datetime
 
+from core import GameRecord
 from ports.data_repository import GameDataPort
 
 class SQLiteAdapter(GameDataPort):
@@ -20,3 +23,12 @@ class SQLiteAdapter(GameDataPort):
             score INTEGER NOT NULL,]
             date TEXT NOT NULL,
             import_at TEXT NOT NULL)""")
+
+    def import_from_json(self, json_path: str) -> int:
+        with open(json_path,"r",encoding="utf-8") as f:
+            raw_data = json.load(f)
+        imported_count = 0
+
+
+
+        return imported_count
