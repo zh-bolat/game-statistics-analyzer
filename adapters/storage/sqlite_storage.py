@@ -1,6 +1,7 @@
 import sqlite3
 import json
 from datetime import datetime
+from typing import Generator
 
 from core import GameRecord
 from ports.data_repository import GameDataPort
@@ -52,3 +53,10 @@ class SQLiteAdapter(GameDataPort):
         print(f"[SQLite] Импортировано {imported_count} записей")
 
         return imported_count
+
+    def load_records(self,
+                     player: str | None = None,
+                     date_from: str | None = None,
+                     date_to: str | None = None,
+                     ) -> Generator[GameRecord, None, None]:
+        query = "SELECT player, score, date FROM game_records WHERE TRUE"
