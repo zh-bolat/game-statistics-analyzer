@@ -29,7 +29,7 @@ def run():
         page_title="Анализатор игровой статистики", page_icon="🎮", layout="wide"
     )
 
-    st.title("🎮 Анализатор игровой статистики")
+    st.title("Анализатор игровой статистики")
     st.markdown(
         "Загрузите JSON-файл с игровыми сессиями для получения аналитики."
     )
@@ -53,7 +53,7 @@ def run():
     st.success(f"Загружено записей: {len(records)}")
 
     st.markdown("---")
-    st.subheader("📌 Ключевые показатели")
+    st.subheader("Ключевые показатели")
 
     records_data = analyzer.get_records()
     all_time = records_data["absolute_record"]
@@ -64,7 +64,7 @@ def run():
     col3.metric("Лучший игрок", all_time["player"] if all_time else "—")
 
     st.markdown("---")
-    st.subheader("📊 Глобальный лидерборд")
+    st.subheader("Глобальный лидерборд")
 
     leaderboard = analyzer.get_leaderboard()
     leaderboard_data = {
@@ -74,7 +74,7 @@ def run():
     st.dataframe(leaderboard_data, use_container_width=True)
 
     st.markdown("---")
-    st.subheader("📈 Средний счёт игроков")
+    st.subheader("Средний счёт игроков")
 
     averages = analyzer.get_average_scores()
     averages_data = {
@@ -84,7 +84,7 @@ def run():
     st.dataframe(averages_data, use_container_width=True)
 
     st.markdown("---")
-    st.subheader("📅 Лучшие результаты по дням")
+    st.subheader("Лучшие результаты по дням")
 
     daily_best = records_data["daily_best"]
     if daily_best:
