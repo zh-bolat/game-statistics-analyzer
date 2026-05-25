@@ -1,4 +1,5 @@
 import json
+import os
 import pandas as pd
 import streamlit as st
 
@@ -6,22 +7,24 @@ from core.models import GameRecord
 from core.services import StatsAnalyzer
 
 
-def _parse_uploaded_file(uploaded_file) -> list[GameRecord]:
+def _parse_uploaded_file(file_obj) -> list[GameRecord]:
+    """Парсит JSON-данные из файлового объекта (uploaded_file или обычный open())."""
     records = []
-    raw_data = json.load(uploaded_file)
-
-    for entry in raw_data:
-        try:
-            records.append(
-                GameRecord(
-                    player=entry["player"],
-                    score=entry["score"],
-                    date=entry["date"],
+    try:
+        raw_data = json.load(file_obj)
+        for entry in raw_data:
+            try:
+                records.append(
+                    GameRecord(
+                        player=entry["player"],
+                        score=entry["score"],
+                        date=entry["date"],
+                    )
                 )
-            )
-        except (KeyError, ValueError, TypeError) as e:
-            st.warning(f"Запись пропущена: {entry} — Причина: {e}")
-
+            except (KeyError, ValueError, TypeError) as e:
+                st.warning(f"Запись пропущена: {entry} — Причина: {e}")
+    except json.JSONDecodeError:
+        st.error("Ошибка чтения JSON: неверный формат файла.")
     return records
 
 
@@ -45,26 +48,36 @@ def run():
 
     st.title("Анализатор игровой статистики")
     st.markdown(
-        "Загрузите JSON-файл с игровыми сессиями для получения аналитики."
+        "Приложение автоматически отображает статистику из системы. Также вы можете загрузить кастомный JSON-файл."
     )
 
+    # Компонент загрузки файлов
     uploaded_file = st.file_uploader(
-        label="Перетащите или выберите файл", type=["json"]
+        label="Перетащите или выберите файл для анализа новой статистики", type=["json"]
     )
 
-    if uploaded_file is None:
-        st.info("Ожидание файла...")
-        return
+    records = []
 
-    records = _parse_uploaded_file(uploaded_file)
+    # Умный подхват данных: приоритет у загруженного файла, иначе берем системный stats.json
+    if uploaded_file is not None:
+        records = _parse_uploaded_file(uploaded_file)
+    else:
+        default_path = "data/stats.json"
+        if os.path.exists(default_path):
+            with open(default_path, "r", encoding="utf-8") as f:
+                records = _parse_uploaded_file(f)
+        else:
+            st.info("Ожидание загрузки файла (дефолтный файл data/stats.json не найден в системе)...")
+            return
 
     if not records:
-        st.error("Файл не содержит корректных записей.")
+        st.error("Не удалось загрузить ни одной корректной игровой записи.")
         return
 
+    # Инициализируем анализатор бизнес-логики
     analyzer = StatsAnalyzer(iter(records))
 
-    st.success(f"Загружено записей: {len(records)}")
+    st.success(f"Успешно обработано записей: {len(records)}")
 
     st.markdown("---")
     st.subheader("Ключевые показатели")
@@ -102,4 +115,14 @@ def run():
 
     daily_best = records_data["daily_best"]
     if daily_best:
-        st.line_chart(daily_best)
+        # Преобразуем ключи-даты в нормальный формат для линейного графика Streamlit
+        chart_data = pd.DataFrame(
+            list(daily_best.items()), columns=["Дата", "Лучший счёт"]
+        ).set_index("Дата")
+        st.line_chart(chart_data)
+    else:
+        st.info("Нет данных для отображения графика.")
+
+
+if name == "main":
+    run()
