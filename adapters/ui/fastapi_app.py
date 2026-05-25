@@ -1,6 +1,14 @@
+
+import os
+
 from fastapi import FastAPI
 from pydantic import BaseModel, field_validator
 from core.models import DATE_PATTERN
+
+
+from adapters.storage.json_storage import JSONFileAdapter
+from core.models import GameRecord
+from core.services import StatsAnalyzer
 
 class GameRecordInput(BaseModel):
     player: str
@@ -48,6 +56,19 @@ class RecordsResponse(BaseModel):
     absolute_record: AbsoluteRecord | None
     daily_best: dict[str, int]
 
+
+_extra_records: list[GameRecord] = []
+
+
+def _build_analyzer() -> StatsAnalyzer:
+    file_path = os.getenv("DATA_FILE", "data/stats.json")
+    file_adapter = JSONFileAdapter(file_path)
+
+    def combined():
+        yield from file_adapter.load_records()
+        yield from _extra_records
+
+    return StatsAnalyzer(combined())
 
 app = FastAPI(
     title="Game Statistics Analyzer API",
