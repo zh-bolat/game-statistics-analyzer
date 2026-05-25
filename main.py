@@ -22,6 +22,8 @@ def run_web():
     # Streamlit запускается отдельной командой, main.py только сообщает об этом
     print("Веб-режим: запустите командой ->  streamlit run adapters/ui/streamlit_app.py")
 
+def run_api():
+    print("API-режим: запустите командой -> uvicorn adapters.ui.fastapi_app:app --reload")
 
 if __name__ == "__main__":
     mode = os.getenv("RUN_MODE", "cli").strip().lower()
@@ -30,5 +32,8 @@ if __name__ == "__main__":
         run_cli()
     elif mode == "web":
         run_web()
+    elif mode == "api":
+        run_api()
+    
     else:
         print(f"[Ошибка] Неизвестный режим: '{mode}'. Используйте 'cli' или 'web'.")
