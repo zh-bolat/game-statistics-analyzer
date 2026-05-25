@@ -23,7 +23,7 @@ def run_web():
     print("Веб-режим: запустите командой ->  streamlit run adapters/ui/streamlit_app.py")
 
 
-if name == "main":
+if __name__ == "__main__":
     mode = os.getenv("RUN_MODE", "cli").strip().lower()
 
     if mode == "cli":
