@@ -8,7 +8,6 @@ from core.services import StatsAnalyzer
 
 
 def _parse_uploaded_file(file_obj) -> list[GameRecord]:
-    """Парсит JSON-данные из файлового объекта (uploaded_file или обычный open())."""
     records = []
     try:
         raw_data = json.load(file_obj)
@@ -51,14 +50,12 @@ def run():
         "Приложение автоматически отображает статистику из системы. Также вы можете загрузить кастомный JSON-файл."
     )
 
-    # Компонент загрузки файлов
     uploaded_file = st.file_uploader(
         label="Перетащите или выберите файл для анализа новой статистики", type=["json"]
     )
 
     records = []
 
-    # Умный подхват данных: приоритет у загруженного файла, иначе берем системный stats.json
     if uploaded_file is not None:
         records = _parse_uploaded_file(uploaded_file)
     else:
@@ -74,7 +71,6 @@ def run():
         st.error("Не удалось загрузить ни одной корректной игровой записи.")
         return
 
-    # Инициализируем анализатор бизнес-логики
     analyzer = StatsAnalyzer(iter(records))
 
     st.success(f"Успешно обработано записей: {len(records)}")
@@ -115,7 +111,6 @@ def run():
 
     daily_best = records_data["daily_best"]
     if daily_best:
-        # Преобразуем ключи-даты в нормальный формат для линейного графика Streamlit
         chart_data = pd.DataFrame(
             list(daily_best.items()), columns=["Дата", "Лучший счёт"]
         ).set_index("Дата")
@@ -123,6 +118,32 @@ def run():
     else:
         st.info("Нет данных для отображения графика.")
 
+    st.markdown("---")
+    st.subheader("Экспорт данных")
 
-if name == "main":
+    if leaderboard:
+        col_btn1, col_btn2, _ = st.columns([1, 1, 4])
+        
+        with col_btn1:
+            csv_data = convert_leaderboard_to_csv(leaderboard)
+            st.download_button(
+                label="📥 Экспорт в CSV",
+                data=csv_data,
+                file_name="leaderboard.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+            
+        with col_btn2:
+            json_data = convert_leaderboard_to_json(leaderboard)
+            st.download_button(
+                label="📥 Экспорт в JSON",
+                data=json_data,
+                file_name="leaderboard.json",
+                mime="application/json",
+                use_container_width=True
+            )
+
+
+if __name__ == "__main__":
     run()
