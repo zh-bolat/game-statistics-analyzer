@@ -102,4 +102,4 @@ def run():
 
     daily_best = records_data["daily_best"]
     if daily_best:
-        st.line_chart(daily_best
+        st.line_chart(daily_best)
