@@ -15,7 +15,7 @@ class CLIAdapter:
         self._print_records()
 
     def _print_leaderboard(self):
-        print("\n📊 ГЛОБАЛЬНЫЙ ЛИДЕРБОРД (макс. счёт)")
+        print("\n ГЛОБАЛЬНЫЙ ЛИДЕРБОРД (макс. счёт)")
         print("-" * 35)
 
         leaderboard = self._analyzer.get_leaderboard()
@@ -28,7 +28,7 @@ class CLIAdapter:
             print(f"  {rank:>2}. {player:<20} {score:>6} очков")
 
     def _print_averages(self):
-        print("\n📈 СРЕДНИЙ СЧЁТ ИГРОКОВ")
+        print("\n СРЕДНИЙ СЧЁТ ИГРОКОВ")
         print("-" * 35)
 
         averages = self._analyzer.get_average_scores()
@@ -41,7 +41,7 @@ class CLIAdapter:
             print(f"  {player:<20} {avg:>8.2f} очков")
 
     def _print_records(self):
-        print("\n🏆 РЕКОРДЫ")
+        print("\n РЕКОРДЫ")
         print("-" * 35)
 
         records = self._analyzer.get_records()
