@@ -29,7 +29,7 @@ class SQLiteAdapter(GameDataPort):
             raw_data = json.load(f)
         imported_count = 0
 
-        now = datetime.datetime.now("%Y-%m-%d")
+        now = datetime.now().strftime("%Y-%m-%d")
         with self._connect() as conn:
             for entry in raw_data:
                 try:
@@ -37,17 +37,17 @@ class SQLiteAdapter(GameDataPort):
                                         entry["score"],
                                         entry["date"])
                     conn.execute("""INSERT INTO game_records 
-                                 (player, score, date, imported_at) )
+                                 (player, score, date, imported_at)
                                  VALUES (?,?,?,?)""",
-                                 (record.playerc,
+                                 (record.player,
                                   record.score,
                                   record.date,
                                   now))
                     imported_count += 1
                 except (KeyError,ValueError, TypeError) as e:
-                    print(f"[Предупреждение]"
-                          f"Запись пропущена {entry}"
-                          f"Причина {e}")
+                    print(f"[Предупреждение] "
+                          f"Запись пропущена {entry} "
+                          f"Причина: {e}" )
 
         print(f"[SQLite] Импортировано {imported_count} записей")
 
