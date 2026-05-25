@@ -75,3 +75,35 @@ app = FastAPI(
     description="REST API для анализа игровой статистики",
     version="1.0.0",
 )
+
+@app.get("/leaderboard", response_model=list[LeaderboardEntry], tags=["analytics"])
+def leaderboard():
+    analyzer = _build_analyzer()
+    return [
+        LeaderboardEntry(player=player, best_score=score)
+        for player, score in analyzer.get_leaderboard()
+    ]
+
+
+@app.get("/averages", response_model=list[AverageEntry], tags=["analytics"])
+def averages():
+    analyzer = _build_analyzer()
+    return [
+        AverageEntry(player=player, average_score=round(avg, 2))
+        for player, avg in analyzer.get_average_scores()
+    ]
+
+
+@app.get("/records", response_model=RecordsResponse, tags=["analytics"])
+def records():
+    analyzer = _build_analyzer()
+    data = analyzer.get_records()
+
+    absolute = None
+    if data["absolute_record"]:
+        absolute = AbsoluteRecord(**data["absolute_record"])
+
+    return RecordsResponse(
+        absolute_record=absolute,
+        daily_best=data["daily_best"],
+    )
