@@ -7,7 +7,7 @@ from ports.data_repository import GameDataPort
 
 class JSONFileAdapter(GameDataPort):
 
-    def init(self, file_path: str):
+    def __init__(self, file_path: str):
         self._file_path = file_path
 
     def load_records(self) -> Generator[GameRecord, None, None]:
