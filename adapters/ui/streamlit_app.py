@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 import streamlit as st
 
 from core.models import GameRecord
@@ -24,9 +25,22 @@ def _parse_uploaded_file(uploaded_file) -> list[GameRecord]:
     return records
 
 
+@st.cache_data
+def convert_leaderboard_to_csv(leaderboard_list):
+    df = pd.DataFrame(leaderboard_list, columns=["Игрок", "Макс. счёт"])
+    return df.to_csv(index=False).encode("utf-8")
+
+
+def convert_leaderboard_to_json(leaderboard_list):
+    df = pd.DataFrame(leaderboard_list, columns=["Игрок", "Макс. счёт"])
+    return df.to_json(orient="records", force_ascii=False, indent=4)
+
+
 def run():
     st.set_page_config(
-        page_title="Анализатор игровой статистики", page_icon="🎮", layout="wide"
+        page_title="Анализатор игровой статистики",
+        page_icon="🎮",
+        layout="wide",
     )
 
     st.title("Анализатор игровой статистики")
@@ -88,10 +102,4 @@ def run():
 
     daily_best = records_data["daily_best"]
     if daily_best:
-        st.line_chart(daily_best)
-    else:
-        st.info("Нет данных для графика.")
-
-
-if __name__ == "__main__":
-    run()
+        st.line_chart(daily_best
