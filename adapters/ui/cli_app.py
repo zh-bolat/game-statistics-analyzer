@@ -2,12 +2,12 @@ from core.services import StatsAnalyzer
 
 class CLIAdapter:
 
-    def init(self, analyzer: StatsAnalyzer):
+    def __init__(self, analyzer: StatsAnalyzer):
         self._analyzer = analyzer
 
     def run(self):
         print("\n" + "=" * 50)
-        print("       АНАЛИЗАТОР ИГРОВОЙ СТАТИСТИКИ")
+        print("        АНАЛИЗАТОР ИГРОВОЙ СТАТИСТИКИ")
         print("=" * 50)
 
         self._print_leaderboard()
@@ -46,15 +46,15 @@ class CLIAdapter:
 
         records = self._analyzer.get_records()
 
-        all_time = records["all_time_best"]
+        all_time = records["absolute_record"]
         if all_time:
-            print(f"  Абсолютный рекорд: {all_time.player} — {all_time.score} очков ({all_time.date})")
+            print(f"  Абсолютный рекорд: {all_time['player']} — {all_time['score']} очков")
         else:
             print("  Нет данных.")
             return
 
         print("\n  Лучшие результаты по дням:")
-        for date, record in records["daily_best"].items():
-            print(f"    {date}: {record.player} — {record.score} очков")
+        for date, score in records["daily_best"].items():
+            print(f"    {date}: {score} очков")
 
         print("\n" + "=" * 50)
