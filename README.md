@@ -16,7 +16,8 @@ game-statistics-analyzer/
 ├── requirements.txt          # Декларация внешних зависимостей (Streamlit)
 │
 ├── data/                     # Каталог локального хранения данных
-│   └── stats.json            # Тестовый набор данных в формате JSON для CLI-модуля
+│   ├── stats.json            # Тестовый набор данных в формате JSON для CLI-модуля
+│   └── stats.db              # SQLite база данных с игровой статистикой
 │
 ├── core/                     # Слой бизнес-логики (Доменная модель и сервисы)
 │   ├── __init__.py
@@ -31,7 +32,8 @@ game-statistics-analyzer/
 │   ├── __init__.py
 │   │
 │   ├── storage/              # Компоненты работы с постоянным хранилищем
-│   │   └── json_storage.py   # JSONFileAdapter (Потоковый парсинг через генераторы)
+│   │   ├── json_storage.py   # JSONFileAdapter (Потоковый парсинг через генераторы)
+│   │   └── sqlite_storage.py # SQLiteAdapter (Импорт JSON и хранение статистики в SQLite)
 │   │
 │   └── ui/                   # Компоненты пользовательского интерфейса
 │       ├── cli_app.py        # CLIAdapter (Консольный вывод аналитических таблиц)
